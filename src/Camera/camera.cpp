@@ -59,7 +59,7 @@ void Camera::draw_raycoast_result_on_screen()
 
     for (int i = 0; i < ray_count; i++)
     {
-        float ray_height = 4 * 0.25 / lenghts[i] * drawer->get_sy(); // barier height * screen distance / lenght to barrier * screen size
+        float ray_height = 3 * 0.25 / lenghts[i] * drawer->get_sy(); // barier height * screen distance / lenght to barrier * screen size
         ray_height *= FOCRayCos[i];
         float yoffset = (drawer->get_sy() - ray_height) * 0.5;
         drawer->rectangle(
