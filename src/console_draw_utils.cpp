@@ -67,12 +67,18 @@ int ConsolePainter::get_sy() {
 	return sy;
 }
 
+void ConsolePainter::find_console_size()
+{
+	CONSOLE_SCREEN_BUFFER_INFO csbi;
+
+	GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
+	sx = csbi.srWindow.Right - csbi.srWindow.Left;
+	sy = csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
+}
+
 void ConsolePainter::update_cons_par()
 {
-	HWND hWnd = GetConsoleWindow();
-	RECT rc;
-	GetClientRect(hWnd, &rc);
-	sx = rc.right / 8; sy = rc.bottom / 16;
+	find_console_size();
 
 	// create char array
 	screen_lenght = (sx + 1) * sy + 1;

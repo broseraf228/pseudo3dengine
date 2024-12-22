@@ -7,6 +7,8 @@ protected:
 
 	char* screen; char* clear_screen;
 
+	void find_console_size();
+
 public:
 
 	ConsolePainter(int sx, int sy);
