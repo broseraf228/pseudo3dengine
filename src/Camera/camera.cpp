@@ -5,6 +5,10 @@
 #include "../Map/map.hpp"
 #include "../console_draw_utils.hpp"
 
+int Camera::grad_lenght = 8;
+float Camera::rev_grad_lenght = 1 / (256.0 / grad_lenght);
+char* Camera::grad = new char[grad_lenght] {' ', '.', '\'', ':', '"', 'o', '8', '$'};
+
 Camera::Camera(ConsolePrimDrawer* drawer, int ray_density) : ray_count{ ray_density }, drawer{ drawer }
 {
     FOVRotators = new mtrx2[ray_count]; // create rotation matrix for create rays
@@ -13,20 +17,21 @@ Camera::Camera(ConsolePrimDrawer* drawer, int ray_density) : ray_count{ ray_dens
         float angle_by_direction = FOW / ray_count * i - FOW * 0.5;
         FOVRotators[i] = mtrx2::mtrx_rotation(angle_by_direction);
         FOCRayCos[i] = 1.0 / cos(angle_by_direction);
-        FOVRotators[i].ceil();
+        //FOVRotators[i].ceil();
     }
 
     lenghts = new float[ray_count];
+    lights = new short[ray_count];
 }
 
-float Camera::raycoast(vec2 const& position, vec2 const& direction, Map const& map) const
+float Camera::raycoast(vec2 const& position, vec2 const& direction, Map const& map)
 {
     float step_lenght = 0.02; // lenght of reycoast lenght
     vec2 step_move = direction * step_lenght;
 
     vec2 pos = position;
 
-    for (int i = 0; i < 3000; i++) {
+    for (int i = 0; i < 1500; i++) {
 
         if (map.get(pos.x, pos.y) != '.')
             return i * step_lenght;   // if pos == solid block
@@ -34,13 +39,32 @@ float Camera::raycoast(vec2 const& position, vec2 const& direction, Map const& m
         pos += step_move;
 
     }
+    return 100;
+}
+float Camera::saveing_raycoast(vec2 const& position, vec2 const& direction, Map const& map, int ray_number)
+{
+    float step_lenght = 0.02; // lenght of reycoast lenght
+    vec2 step_move = direction * step_lenght;
 
+    vec2 pos = position;
+
+    for (int i = 0; i < 1500; i++) {
+
+        if (map.get(pos.x, pos.y) != '.') {// if pos == solid block
+            lenghts[ray_number] = i * step_lenght;
+            lights[ray_number] = map.get_light_level(pos.x, pos.y);
+            return i * step_lenght;
+        }
+        pos += step_move;
+    }
+    return 100;
 }
 
 void Camera::multiray_reycoast(vec2 const& position, vec2 const& direction, Map const& map)
 {
     for (int i = 0; i < ray_count; i++) {
-        lenghts[i] = raycoast(position, FOVRotators[i] * direction, map);
+        // raycoast method can save lenght and etc it on his own
+        saveing_raycoast(position, FOVRotators[i] * direction, map, i);
     }
 }
 
@@ -48,24 +72,19 @@ void Camera::draw_raycoast_result_on_screen()
 {
     float ray_width = float(drawer->get_sx()) / ray_count;
 
-    //drawer->rectangle(
-    //    0, 0,
-    //    drawer->get_sx(), drawer->get_sy()/2,
-    //    ',');
-    drawer->rectangle(
-        0, drawer->get_sy() / 2,
-        drawer->get_sx(), drawer->get_sy(),
-        ';');
-
     for (int i = 0; i < ray_count; i++)
     {
-        float ray_height = 3 * 0.25 / lenghts[i] * drawer->get_sy(); // barier height * screen distance / lenght to barrier * screen size
+        float ray_height = (0.5) / lenghts[i] * drawer->get_sy(); // barier height * screen distance / lenght to barrier * screen size
         ray_height *= FOCRayCos[i];
         float yoffset = (drawer->get_sy() - ray_height) * 0.5;
+
+        int ray_light_level = (lights[i] - lenghts[i] * lenghts[i] * 3) * rev_grad_lenght;
+        char ray_vis = grad[ray_light_level];
+
         drawer->rectangle(
             ray_width * i, yoffset,
             ray_width * (i + 1), ray_height + yoffset,
-            '#');
+            ray_vis);
     }
 
 }

@@ -73,7 +73,7 @@ void ConsolePainter::find_console_size()
 
 	GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
 	sx = csbi.srWindow.Right - csbi.srWindow.Left;
-	sy = csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
+	sy = csbi.srWindow.Bottom - csbi.srWindow.Top;
 }
 
 void ConsolePainter::update_cons_par()

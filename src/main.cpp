@@ -13,11 +13,12 @@
 #include "console_draw_utils.hpp"
 #include "Camera/camera.hpp"
 
+/* TODO:
+*/
+
 #define PI 3.1415
 #define SCEPROJLEN 2.0
 #define SCRS 20.0
-
-char grad[] = "$H80Oo+*;:,.";
 
 struct Player {
     vec2 position;
@@ -26,7 +27,7 @@ struct Player {
     Camera const& cam;
     Map& map;
 
-    Player(int px, int py, Map& map, Camera const& cam) : position{ float(px), float(py) }, direction{ 0, 1 }, map{map}, cam { cam } {}
+    Player(float px, float py, Map& map, Camera const& cam) : position{ float(px), float(py) }, direction{ 0, 1 }, map{map}, cam { cam } {}
     
     float take_timer = 1000;
 
@@ -56,6 +57,16 @@ struct Player {
         if (GetKeyState('Q') & 0x8000/*Check if high-order bit is set (1 << 15)*/)
         {
             take();
+        }
+
+        // add light source
+        if (GetKeyState('L') & 0x8000) {
+            if (take_timer > 0)
+                return;
+            take_timer = 2000;
+            map.add_light_source(position, 16);
+            map.bake_all_lights();
+            map.light_the_map();
         }
 
         // rorate camera
@@ -109,9 +120,11 @@ int main(int argc, char* argv[])
 
     // init map
     Map map{};
+    map.bake_all_lights();
+    map.light_the_map();
 
     // init player
-    Player player{4, 2, map, camera};
+    Player player{0.25, 0.25, map, camera};
 
 
     // GAME LOOP
@@ -123,7 +136,7 @@ int main(int argc, char* argv[])
         // calac delay of runnung (AKA FPS)
         int mimiseck_delay = clock() - tStart;
         float delta = mimiseck_delay * 0.001;
-        itoa(player.position.x, title, 10);
+        itoa(mimiseck_delay, title, 10);
         SetConsoleTitle(title);
 
         tStart = clock();
