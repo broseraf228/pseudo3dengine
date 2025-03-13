@@ -6,7 +6,7 @@
 #define PI 3.1415
 
 
-struct ConsolePrimDrawer;
+struct PrimDrawer;
 struct Map;
 
 struct Camera {
@@ -20,12 +20,12 @@ struct Camera {
     mtrx2* FOVRotators;
     float* FOCRayCos;
 
-    ConsolePrimDrawer* drawer;
+    PrimDrawer* drawer;
 
     float* lenghts; // for store rays distance
     short* lights; // for store rays color (fow block light)
 
-    Camera(ConsolePrimDrawer* drawer, int ray_density);
+    Camera(PrimDrawer* drawer, int ray_density);
 
     // start ray 
     static float raycoast(vec2 const& position, vec2 const& direction, Map const& map);

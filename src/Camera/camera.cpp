@@ -5,11 +5,13 @@
 #include "../Map/map.hpp"
 #include "../console_draw_utils.hpp"
 
+#include<SFML/Graphics.hpp>
+
 int Camera::grad_lenght = 8;
 float Camera::rev_grad_lenght = 1 / (256.0 / grad_lenght);
 char* Camera::grad = new char[grad_lenght] {' ', '.', '\'', ':', '"', 'o', '8', '$'};
 
-Camera::Camera(ConsolePrimDrawer* drawer, int ray_density) : ray_count{ ray_density }, drawer{ drawer }
+Camera::Camera(PrimDrawer* drawer, int ray_density) : ray_count{ ray_density }, drawer{ drawer }
 {
     FOVRotators = new mtrx2[ray_count]; // create rotation matrix for create rays
     FOCRayCos = new float[ray_count];
@@ -26,7 +28,7 @@ Camera::Camera(ConsolePrimDrawer* drawer, int ray_density) : ray_count{ ray_dens
 
 float Camera::raycoast(vec2 const& position, vec2 const& direction, Map const& map)
 {
-    float step_lenght = 0.02; // lenght of reycoast lenght
+    float step_lenght = 0.01; // lenght of reycoast lenght
     vec2 step_move = direction * step_lenght;
 
     vec2 pos = position;
@@ -70,21 +72,20 @@ void Camera::multiray_reycoast(vec2 const& position, vec2 const& direction, Map 
 
 void Camera::draw_raycoast_result_on_screen()
 {
-    float ray_width = float(drawer->get_sx()) / ray_count;
+    float ray_width = 1.0 / ray_count;
 
     for (int i = 0; i < ray_count; i++)
     {
-        float ray_height = (0.5) / lenghts[i] * drawer->get_sy(); // barier height * screen distance / lenght to barrier * screen size
+        float ray_height = 0.1 / lenghts[i]; // barier height * screen distance / lenght to barrier * screen size
         ray_height *= FOCRayCos[i];
-        float yoffset = (drawer->get_sy() - ray_height) * 0.5;
+        float yoffset = (1 - ray_height) * 0.5;
 
-        int ray_light_level = (lights[i] - lenghts[i] * lenghts[i] * 3) * rev_grad_lenght;
-        char ray_vis = grad[ray_light_level];
+        int ray_light_level = (lights[i] - lenghts[i] * lenghts[i] * 3);
 
         drawer->rectangle(
             ray_width * i, yoffset,
             ray_width * (i + 1), ray_height + yoffset,
-            ray_vis);
+            sf::Color(ray_light_level, ray_light_level, ray_light_level));
     }
 
 }

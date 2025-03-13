@@ -1,19 +1,15 @@
+#include<SFML/Graphics.hpp>
 
-class ConsolePainter {
+class Painter {
 protected:
 
 	int sx, sy;
-	int screen_lenght;
 
-	char* screen; char* clear_screen;
-
-	void find_console_size();
+	sf::RenderWindow* window;
 
 public:
 
-	ConsolePainter(int sx, int sy);
-
-	inline void edit_symbol(int px, int py, char symbol);
+	Painter(sf::RenderWindow* window);
 
 	void clear();
 
@@ -21,16 +17,16 @@ public:
 
 	virtual int get_sx();
 	virtual int get_sy();
-
 	void update_cons_par();
 };
 
-class ConsolePrimDrawer : public ConsolePainter {
+class PrimDrawer : public Painter {
+protected:
+	sf::VertexArray rects{};
 public:
-	ConsolePrimDrawer(int sx, int sy);
+	PrimDrawer(sf::RenderWindow* window);
 
-	void line(int x0, int y0, int x1, int y1, char symbol);
-	void rectangle(int x0, int y0, int sx, int sy, char fill);
+	void rectangle(float x0, float y0, float sx, float sy, const sf::Color&);
 
-	int get_sx();
+	void draw();
 };

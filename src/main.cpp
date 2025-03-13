@@ -13,6 +13,8 @@
 #include "console_draw_utils.hpp"
 #include "Camera/camera.hpp"
 
+#include<SFML/Graphics.hpp>
+
 /* TODO:
 */
 
@@ -47,10 +49,10 @@ struct Player {
 
         float speed = 1;
         // control
-        speed = 100;
+        speed = 40;
         if (GetKeyState(VK_LSHIFT) & 0x8000/*Check if high-order bit is set (1 << 15)*/)
         {
-            speed = 200;
+            speed = 60;
         }
 
         // take block
@@ -112,11 +114,12 @@ struct Player {
 int main(int argc, char* argv[])
 {
     // init screen
-    int screen_x = 120, screen_y = 29;
-    ConsolePrimDrawer drawer(screen_x, screen_y);
+    sf::RenderWindow window(sf::VideoMode(1200, 860), "Game");
+
+    PrimDrawer drawer(&window);
 
     //init camera
-    Camera camera{&drawer, 240};
+    Camera camera{&drawer, 500};
 
     // init map
     Map map{};
@@ -130,7 +133,9 @@ int main(int argc, char* argv[])
     // GAME LOOP
     clock_t tStart = clock();
     char title[5];
-    while(true)
+
+    bool run = true;
+    while(run)
     {
 
         // calac delay of runnung (AKA FPS)
@@ -141,6 +146,15 @@ int main(int argc, char* argv[])
 
         tStart = clock();
 
+        sf::Event event;
+        while (window.pollEvent(event))
+        {
+            if (event.type == sf::Event::Closed) {
+                run = false;
+                window.close();
+            }
+        }
+
         // update map
         map.update();
 
@@ -150,6 +164,7 @@ int main(int argc, char* argv[])
         drawer.clear();
         camera.multiray_reycoast(player.position, player.direction, map);
         camera.draw_raycoast_result_on_screen();
+        drawer.draw();
         drawer.display();
 
         // update player
