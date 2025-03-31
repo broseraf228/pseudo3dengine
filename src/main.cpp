@@ -6,9 +6,6 @@
 #include <chrono>
 #include <thread>
 
-#include "math/vec2.hpp"
-#include "math/mtrx.hpp"
-
 #include "Map/map.hpp"
 #include "console_draw_utils.hpp"
 #include "Camera/camera.hpp"

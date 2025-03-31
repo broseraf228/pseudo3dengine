@@ -51,11 +51,19 @@ void PrimDrawer::rectangle(float x0, float y0, float x1, float y1, const sf::Col
 	rects.append(sf::Vertex(sf::Vector2f(x1, y1), fill));
 	rects.append(sf::Vertex(sf::Vector2f(x0, y1), fill));
 }
+void PrimDrawer::triangle(float x0, float y0, float x1, float y1, float x2, float y2, const sf::Color& fill){
+
+	triang.append(sf::Vertex(sf::Vector2f(x0 * sx, y0 * sy), fill));
+	triang.append(sf::Vertex(sf::Vector2f(x1 * sx, y1 * sy), fill));
+	triang.append(sf::Vertex(sf::Vector2f(x2 * sx, y2 * sy), fill));
+}
 
 void  PrimDrawer::draw() {
 
 	window->draw(rects);
+	window->draw(triang);
 	rects.clear();
+	triang.clear();
 }
 
 //---------------------------------------

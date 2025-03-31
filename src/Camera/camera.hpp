@@ -1,7 +1,6 @@
 #pragma once
 
-#include "../math/mtrx.hpp"
-#include "../math/vec2.hpp"
+#include "../math/include_all.hpp"
 
 #define PI 3.1415
 

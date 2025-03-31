@@ -27,5 +27,5 @@ public:
 };
 
 namespace v2d {
-	vec2 const standart(0.0, 1.0);
+	vec2 const standart(1.0, 0);
 }

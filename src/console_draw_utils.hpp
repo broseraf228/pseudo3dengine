@@ -23,10 +23,13 @@ public:
 class PrimDrawer : public Painter {
 protected:
 	sf::VertexArray rects{};
+	sf::VertexArray triang{};
 public:
 	PrimDrawer(sf::RenderWindow* window);
 
 	void rectangle(float x0, float y0, float sx, float sy, const sf::Color&);
+
+	void triangle(float x0, float y0, float x1, float y1, float x2, float y2, const sf::Color&);
 
 	void draw();
 };
