@@ -6,19 +6,19 @@
 #include <chrono>
 #include <thread>
 
-#include "Map/map.hpp"
 #include "console_draw_utils.hpp"
 #include "Camera/camera.hpp"
+#include "mesh.hpp"
 
 #include<SFML/Graphics.hpp>
 
 /* TODO:
+* fix memory leak in mesh destructor
+* add rotation / scale matrix generator
+* add load model from file function (отдельный класс)
 */
 
-#define PI 3.1415
-#define SCEPROJLEN 2.0
-#define SCRS 20.0
-
+/*
 struct Player {
     vec2 position;
     vec2 direction;
@@ -47,13 +47,13 @@ struct Player {
         float speed = 1;
         // control
         speed = 40;
-        if (GetKeyState(VK_LSHIFT) & 0x8000/*Check if high-order bit is set (1 << 15)*/)
+        if (GetKeyState(VK_LSHIFT) & 0x8000)
         {
             speed = 60;
         }
 
         // take block
-        if (GetKeyState('Q') & 0x8000/*Check if high-order bit is set (1 << 15)*/)
+        if (GetKeyState('Q') & 0x8000)
         {
             take();
         }
@@ -69,29 +69,29 @@ struct Player {
         }
 
         // rorate camera
-        if (GetKeyState('N') & 0x8000/*Check if high-order bit is set (1 << 15)*/)
+        if (GetKeyState('N') & 0x8000)
         {
             direction = mtrx2::mtrx_rotation(-PI * delta) * direction;
         }
-        if (GetKeyState('M') & 0x8000/*Check if high-order bit is set (1 << 15)*/)
+        if (GetKeyState('M') & 0x8000)
         {
             direction = mtrx2::mtrx_rotation(PI * delta) * direction;
         }
 
         // move player
-        if (GetKeyState('A') & 0x8000/*Check if high-order bit is set (1 << 15)*/)
+        if (GetKeyState('A') & 0x8000)
         {
             position -= rot90 * direction * 0.017 * delta * speed;
         }
-        if (GetKeyState('D') & 0x8000/*Check if high-order bit is set (1 << 15)*/)
+        if (GetKeyState('D') & 0x8000)
         {
             position += rot90 * direction * 0.017 * delta * speed;
         }
-        if (GetKeyState('W') & 0x8000/*Check if high-order bit is set (1 << 15)*/)
+        if (GetKeyState('W') & 0x8000)
         {
             position += direction * 0.02 * speed * delta;
         }
-        if (GetKeyState('S') & 0x8000/*Check if high-order bit is set (1 << 15)*/)
+        if (GetKeyState('S') & 0x8000)
         {
             position -= direction * 0.015 * speed * delta;
         }
@@ -107,25 +107,33 @@ struct Player {
     }
 
 };
+*/
 
 int main(int argc, char* argv[])
 {
+    vec4 vertices[4]
+    {
+        vec4(-3, 3, 10, 0),
+        vec4(3, 3, 10, 0),
+        vec4(3, -3, 10, 0),
+        vec4(-3, -3, 10, 0)
+    };
+
+    face faces[2]{ face(0, 1, 2, 0), face(0, 3, 2, 0) };
+
+    Mesh mesh(4, vertices, 2, faces);
+
+
+
     // init screen
-    sf::RenderWindow window(sf::VideoMode(1200, 860), "Game");
+    sf::RenderWindow window(sf::VideoMode(640, 640), "Game");
 
     PrimDrawer drawer(&window);
 
     //init camera
-    Camera camera{&drawer, 500};
+    Camera camera{&drawer};
 
-    // init map
-    Map map{};
-    map.bake_all_lights();
-    map.light_the_map();
-
-    // init player
-    Player player{0.25, 0.25, map, camera};
-
+    camera.addMesh(mesh);
 
     // GAME LOOP
     clock_t tStart = clock();
@@ -152,20 +160,13 @@ int main(int argc, char* argv[])
             }
         }
 
-        // update map
-        map.update();
-
         // draw 
-        drawer.update_cons_par();
-        //printf("\r");
         drawer.clear();
-        camera.multiray_reycoast(player.position, player.direction, map);
-        camera.draw_raycoast_result_on_screen();
+
+        camera.render();
+
         drawer.draw();
         drawer.display();
-
-        // update player
-        player.update(delta);
 
         // wait
         if (1000 / 60 - mimiseck_delay > 0)

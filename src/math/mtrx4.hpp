@@ -12,8 +12,8 @@ struct mtrx4 {
 	// указываются СТРОКИ. типо е1 - первая строка, е2 - вторая и тд
 	mtrx4(const vec4& e1 , const vec4& e2, const vec4& e3, const vec4& e4);
 
-	vec4 operator*(vec4 const&);
-	mtrx4 operator*(mtrx4 const&);
+	vec4 operator*(vec4 const&) const;
+	mtrx4 operator*(mtrx4 const&) const;
 
 	void swap_by_diogonale();
 

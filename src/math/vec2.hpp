@@ -25,7 +25,3 @@ public:
 	static float sclMul(vec2 const &, vec2 const &);
 	
 };
-
-namespace v2d {
-	vec2 const standart(1.0, 0);
-}

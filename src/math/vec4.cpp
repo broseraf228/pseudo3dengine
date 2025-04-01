@@ -42,7 +42,7 @@ vec4 const& vec4::operator*=(float other)
 	return *this;
 }
 
-float vec4::mod() {
+float vec4::mod() const {
 	return  sqrtf(x * x + y * y + z * z + u * u);
 }
 vec4 vec4::norm() {

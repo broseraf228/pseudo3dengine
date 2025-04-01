@@ -37,6 +37,7 @@ void Painter::update_cons_par(){
 PrimDrawer::PrimDrawer(sf::RenderWindow* window) : Painter(window)
 {
 	rects.setPrimitiveType(sf::Quads);
+	triang.setPrimitiveType(sf::Triangles);
 }
 
 void PrimDrawer::rectangle(float x0, float y0, float x1, float y1, const sf::Color& fill)
@@ -53,9 +54,9 @@ void PrimDrawer::rectangle(float x0, float y0, float x1, float y1, const sf::Col
 }
 void PrimDrawer::triangle(float x0, float y0, float x1, float y1, float x2, float y2, const sf::Color& fill){
 
-	triang.append(sf::Vertex(sf::Vector2f(x0 * sx, y0 * sy), fill));
-	triang.append(sf::Vertex(sf::Vector2f(x1 * sx, y1 * sy), fill));
-	triang.append(sf::Vertex(sf::Vector2f(x2 * sx, y2 * sy), fill));
+	triang.append(sf::Vertex(sf::Vector2f(x0 * sx + 0.5 * sx, y0 * sy + 0.5 * sy), fill));
+	triang.append(sf::Vertex(sf::Vector2f(x1 * sx + 0.5 * sx, y1 * sy + 0.5 * sy), fill));
+	triang.append(sf::Vertex(sf::Vector2f(x2 * sx + 0.5 * sx, y2 * sy + 0.5 * sy), fill));
 }
 
 void  PrimDrawer::draw() {

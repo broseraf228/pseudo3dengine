@@ -18,14 +18,10 @@ public:
 	vec4 const& operator/=(float);
 
 	void ceil();
-	float mod();
+	float mod() const;
 	vec4 norm();
 
 	// scallar multiplication
 	static float sclMul(vec4 const &, vec4 const &);
 	
 };
-
-namespace v2d {
-	vec4 const standart(1.0, 0, 0, 0);
-}
