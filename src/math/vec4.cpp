@@ -45,6 +45,9 @@ vec4 const& vec4::operator*=(float other)
 float vec4::mod() const {
 	return  sqrtf(x * x + y * y + z * z + u * u);
 }
+float vec4::nosMod() const {
+	return  x * x + y * y + z * z + u * u;
+}
 vec4 vec4::norm() {
 	float l = mod();
 	return  vec4(x / l, y / l, z / l , u / l);

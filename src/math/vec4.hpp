@@ -19,6 +19,7 @@ public:
 
 	void ceil();
 	float mod() const;
+	float nosMod() const;
 	vec4 norm();
 
 	// scallar multiplication

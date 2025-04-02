@@ -7,13 +7,13 @@
 #include <thread>
 
 #include "console_draw_utils.hpp"
-#include "Camera/camera.hpp"
-#include "mesh.hpp"
+#include "3d/renderer.hpp"
+#include "3d/mesh.hpp"
+#include "math/include_all.hpp"
 
 #include<SFML/Graphics.hpp>
 
 /* TODO:
-* fix memory leak in mesh destructor
 * add rotation / scale matrix generator
 * add load model from file function (отдельный класс)
 */
@@ -111,19 +111,36 @@ struct Player {
 
 int main(int argc, char* argv[])
 {
-    vec4 vertices[4]
+    mtrx4 j = mtrx4( vec4(0,1,2,3), vec4(4,5,6,7), vec4(8,9,10,11), vec4(12,13,14,15) );
+    mtrx4 g = mtrx4(vec4(16, 17, 18, 19), vec4(20, 21, 22, 23), vec4(24, 25, 26, 27), vec4(28, 29, 30, 31));
+
+    mtrx4 r = j * g;
+
+    vec4 vertices[6]
     {
-        vec4(-3, 3, 10, 0),
-        vec4(3, 3, 10, 0),
-        vec4(3, -3, 10, 0),
-        vec4(-3, -3, 10, 0)
+        vec4(-1, 0, 1, 0),
+        vec4(1, 0, 1, 0),
+        vec4(1, 0, -1, 0),
+        vec4(-1, 0, -1, 0),
+
+        vec4(0, 1.4, 0, 0),
+        vec4(0, -1.4, 0, 0),
     };
 
-    face faces[2]{ face(0, 1, 2, 0), face(0, 3, 2, 0) };
+    face faces[8]{ 
+        face(4, 0, 3, 0), 
+        face(4, 0, 1, 0), 
+        face(4, 2, 3, 0), 
+        face(4, 2, 1, 0),
 
-    Mesh mesh(4, vertices, 2, faces);
+        face(5, 0, 3, 0),
+        face(5, 0, 1, 0),
+        face(5, 2, 3, 0),
+        face(5, 2, 1, 0) };
 
+    Mesh mesh(6, vertices, 8, faces);
 
+    Model model(mesh, vec4(0, 0, 7, 0), mtrx4::mtrx_scale(vec4(1)));
 
     // init screen
     sf::RenderWindow window(sf::VideoMode(640, 640), "Game");
@@ -131,17 +148,17 @@ int main(int argc, char* argv[])
     PrimDrawer drawer(&window);
 
     //init camera
-    Camera camera{&drawer};
-
-    camera.addMesh(mesh);
+    MeshRanderer camera{&drawer};
 
     // GAME LOOP
+    unsigned int frame_number = 0;
     clock_t tStart = clock();
     char title[5];
 
     bool run = true;
     while(run)
     {
+        frame_number++;
 
         // calac delay of runnung (AKA FPS)
         int mimiseck_delay = clock() - tStart;
@@ -160,17 +177,22 @@ int main(int argc, char* argv[])
             }
         }
 
-        // draw 
-        drawer.clear();
-
+        // draw
+        camera.addModel(model);
         camera.render();
+        camera.clear();
 
         drawer.draw();
         drawer.display();
+        drawer.clear();
+
+        // upd model
+        model.transform = mtrx4::mtrx_rotation_x(sin((float)frame_number / 90));
+        model.position.x = sin((float)frame_number / 50) / 2 + sin((float)frame_number / 100);
 
         // wait
-        if (1000 / 60 - mimiseck_delay > 0)
-            Sleep(1000 / 60 - mimiseck_delay);
+        if (1000 / 120 - mimiseck_delay > 0)
+            Sleep(1000 / 120 - mimiseck_delay);
     }
     return 0;
 }
