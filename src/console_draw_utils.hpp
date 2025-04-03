@@ -6,6 +6,7 @@ class Painter {
 protected:
 
 	int sx, sy;
+	float res;
 
 	sf::RenderWindow* window;
 

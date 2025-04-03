@@ -143,10 +143,11 @@ int main(int argc, char* argv[])
 
     Mesh mesh(vertices, faces, {});
 
-    Model model(mesh, vec4(0,0,7,0), mtrx4::mtrx_scale(vec4(1)));
+    Model model(mesh, vec4(-2, 0, 7, 0), mtrx4::mtrx_scale(vec4(1)));
+    Model modelb(mesh, vec4(2, 0, 7, 0), mtrx4::mtrx_scale(vec4(1)));
 
     // init screen
-    sf::RenderWindow window(sf::VideoMode(640, 640), "Game");
+    sf::RenderWindow window(sf::VideoMode(720, 720), "Game");
 
     PrimDrawer drawer(&window);
 
@@ -185,13 +186,13 @@ int main(int argc, char* argv[])
         }
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::Up))
-            camera_rot = mtrx4::mtrx_rotation_x(-0.01) * camera_rot;
+            camera_rot = mtrx4::mtrx_rotation_x(-PI * 0.005) * camera_rot;
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::Down))
-            camera_rot = mtrx4::mtrx_rotation_x(0.01) * camera_rot;
+            camera_rot = mtrx4::mtrx_rotation_x(PI * 0.005) * camera_rot;
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::Left))
-            camera_rot = mtrx4::mtrx_rotation_y(-0.01) * camera_rot;
+            camera_rot = mtrx4::mtrx_rotation_y(-PI * 0.005) * camera_rot;
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::Right))
-            camera_rot = mtrx4::mtrx_rotation_y(0.01) * camera_rot;
+            camera_rot = mtrx4::mtrx_rotation_y(PI * 0.005) * camera_rot;
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::S))
             camera_rot = mtrx4::mtrx_shift(vec4(0, 0, 0.1, 0)) * camera_rot;
@@ -209,6 +210,8 @@ int main(int argc, char* argv[])
         
         // draw
         camera.addModel(model);
+        camera.addModel(modelb);
+
         camera.transformAll(camera_rot);
         camera.render();
         camera.clear();
@@ -218,9 +221,13 @@ int main(int argc, char* argv[])
         drawer.clear();
 
         // upd model
-        //model.transform = model.transform * mtrx4::mtrx_rotation_y((sin((float)frame_number / 90) + 1) / 90);
-        //model.transform = model.transform * mtrx4::mtrx_rotation_x((sin((float)frame_number / 90 + PI / 2) + 1) / 90);
-        //model.transform = model.transform * mtrx4::mtrx_rotation_z((sin((float)frame_number / 90 + PI) + 1) / 90);
+        model.transform = model.transform * mtrx4::mtrx_rotation_y((sin((float)frame_number / 90        ) + 1) / 90);
+        model.transform = model.transform * mtrx4::mtrx_rotation_x((sin((float)frame_number / 90 + PI / 2) + 1) / 90);
+        model.transform = model.transform * mtrx4::mtrx_rotation_z((sin((float)frame_number / 90 + PI   ) + 1) / 90);
+
+        modelb.transform = model.transform * mtrx4::mtrx_rotation_y((cos((float)frame_number / 90) + 1) / 90);
+        modelb.transform = model.transform * mtrx4::mtrx_rotation_x((cos((float)frame_number / 90 + PI / 2) + 1) / 90);
+        modelb.transform = model.transform * mtrx4::mtrx_rotation_z((cos((float)frame_number / 90 + PI) + 1) / 90);
 
         // wait
         if (1000 / 240 - mimiseck_delay > 0)

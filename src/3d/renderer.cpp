@@ -57,19 +57,30 @@ void MeshRanderer::transformAll(const mtrx4& m){
 }
 
 void MeshRanderer::prepare_order_of_faces(){
+	int ind = 0;
 	for (int i = 0; i < render_mesh->faces.size(); i++) {
-		order_of_faces[i] = i;
+		if (render_mesh->vertices[render_mesh->faces[i].v1].z < 0 ||
+			render_mesh->vertices[render_mesh->faces[i].v2].z < 0 ||
+			render_mesh->vertices[render_mesh->faces[i].v3].z < 0) 
+		{
+			continue;
+		}
 
-		dists_faces[i] = render_mesh->vertices[render_mesh->faces[i].v1].nosMod() 
+		order_of_faces[ind] = i;
+
+		dists_faces[ind] = render_mesh->vertices[render_mesh->faces[i].v1].nosMod() 
 			+ render_mesh->vertices[render_mesh->faces[i].v2].nosMod() 
 			+ render_mesh->vertices[render_mesh->faces[i].v3].nosMod();
+
+		ind++;
 	}
-		
+
+	rendering_faces_count = ind;
 }
 void MeshRanderer::sort_faces(){
-	for (int j = 0; j < render_mesh->faces.size(); j++) {
+	for (int j = 0; j < rendering_faces_count; j++) {
 
-		for (int i = render_mesh->faces.size() - 1; i > 0; i--) {
+		for (int i = rendering_faces_count - 1; i > 0; i--) {
 			if (dists_faces[i] > dists_faces[i - 1]) {
 
 				std::swap(dists_faces[i], dists_faces[i - 1]);
@@ -93,12 +104,14 @@ void MeshRanderer::projectVertices()
 
 void MeshRanderer::drawFacesOnScreen() {
 
-	for (int i = 0; i < render_mesh->faces.size(); i++) {
+	float fow = 1 / PI * 2;
+
+	for (int i = 0; i < rendering_faces_count; i++) {
 
 		drawer->triangle(
-			project_vertices[render_mesh->faces[order_of_faces[i]].v1],
-			project_vertices[render_mesh->faces[order_of_faces[i]].v2],
-			project_vertices[render_mesh->faces[order_of_faces[i]].v3],
+			project_vertices[render_mesh->faces[order_of_faces[i]].v1] * fow,
+			project_vertices[render_mesh->faces[order_of_faces[i]].v2] * fow,
+			project_vertices[render_mesh->faces[order_of_faces[i]].v3] * fow,
 			render_mesh->faces[order_of_faces[i]].color
 			);
 

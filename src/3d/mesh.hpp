@@ -16,6 +16,8 @@ struct face {
 	// dnic
 	face(unsigned short v1, unsigned short v2, unsigned short v3, const sf::Color& color = sf::Color::Magenta);
 
+	void offset_vertexes(int);
+
 	unsigned short v1, v2, v3;
 	sf::Color color;
 

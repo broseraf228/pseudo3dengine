@@ -33,6 +33,7 @@ int Painter::get_sy() {
 }
 void Painter::update_cons_par(){
 	sx = window->getSize().x, sy = window->getSize().y;
+	res = sx / sy;
 }
 //---------------------------------------
 
@@ -63,9 +64,9 @@ void PrimDrawer::triangle(float x0, float y0, float x1, float y1, float x2, floa
 }
 void PrimDrawer::triangle(const vec2& p0, const vec2& p1, const vec2& p2, const sf::Color& fill)
 {
-	triang.append(sf::Vertex(sf::Vector2f((p0.x + 0.5) * sx, (p0.y + 0.5) * sy), fill));
-	triang.append(sf::Vertex(sf::Vector2f((p1.x + 0.5) * sx, (p1.y + 0.5) * sy), fill));
-	triang.append(sf::Vertex(sf::Vector2f((p2.x + 0.5) * sx, (p2.y + 0.5) * sy), fill));
+	triang.append(sf::Vertex(sf::Vector2f((p0.x + 0.5) * sx * res, (p0.y + 0.5) * sy), fill));
+	triang.append(sf::Vertex(sf::Vector2f((p1.x + 0.5) * sx * res, (p1.y + 0.5) * sy), fill));
+	triang.append(sf::Vertex(sf::Vector2f((p2.x + 0.5) * sx * res, (p2.y + 0.5) * sy), fill));
 
 	//lines.append(sf::Vertex(sf::Vector2f((p0.x + 0.5) * sx, (p0.y + 0.5) * sy), sf::Color::Black));
 	//lines.append(sf::Vertex(sf::Vector2f((p1.x + 0.5) * sx, (p1.y + 0.5) * sy), sf::Color::Black));

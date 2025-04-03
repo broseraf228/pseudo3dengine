@@ -19,6 +19,7 @@ protected:
     void clearRenderMesh();
 
     unsigned short* order_of_faces;
+    int rendering_faces_count;
     float* dists_faces;
 
     void prepare_order_of_faces();

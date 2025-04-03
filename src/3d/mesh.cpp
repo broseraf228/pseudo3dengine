@@ -5,6 +5,9 @@
 face::face() : face(0, 0, 0) {}
 face::face(const vec4& vertices, const sf::Color& color) : face(vertices.x, vertices.y, vertices.z, color) {}
 face::face(unsigned short v1, unsigned short v2, unsigned short v3, const sf::Color& color) : v1{ v1 }, v2{ v2 }, v3{ v3 }, color{color} {}
+void face::offset_vertexes(int i) {
+	v1 += i; v2 += i; v3 += i;
+}
 
 
 Mesh::Mesh(int vertices_cap, int feces_cap) {
@@ -41,11 +44,18 @@ void Mesh::addMesh(const Mesh& m) {
 	if (faces.size() + m.faces.size() >= faces.capacity())
 		throw "tyr to attach an array with too many faces";
 
-	for (int i = 0; i < m.vertices.size(); i++)
+	int vs = vertices.size();
+	int mvs = m.vertices.size();
+
+	for (int i = 0; i < mvs; i++)
 		vertices.push_back(m.vertices[i]);
 
 	for (int i = 0; i < m.faces.size(); i++) {
+
 		faces.push_back(m.faces[i]);
+
+		faces[vs + i].offset_vertexes(vs);
+
 		normals.push_back(m.normals[i]);
 	}
 }
