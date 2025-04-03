@@ -57,19 +57,23 @@ void MeshRanderer::prepare_order_of_faces(){
 		order_of_faces[i] = i;
 
 		dists_faces[i] = render_mesh->vertices[render_mesh->faces[i].v1].nosMod() 
-			+ render_mesh->vertices[render_mesh->faces[i].v1].nosMod() 
-			+ render_mesh->vertices[render_mesh->faces[i].v1].nosMod();
+			+ render_mesh->vertices[render_mesh->faces[i].v2].nosMod() 
+			+ render_mesh->vertices[render_mesh->faces[i].v3].nosMod();
 	}
 		
 }
 void MeshRanderer::sort_faces(){
-	for(int i = render_mesh->faces_array_size - 1; i > 0; i--) {
-		if (dists_faces[i] > dists_faces[i - 1]) {
+	for (int j = 0; j < render_mesh->faces_array_size; j++) {
 
-			std::swap(dists_faces[i], dists_faces[i - 1]);
-			std::swap(order_of_faces[i], order_of_faces[i - 1]);
+		for (int i = render_mesh->faces_array_size - 1; i > 0; i--) {
+			if (dists_faces[i] > dists_faces[i - 1]) {
 
+				std::swap(dists_faces[i], dists_faces[i - 1]);
+				std::swap(order_of_faces[i], order_of_faces[i - 1]);
+
+			}
 		}
+
 	}
 }
 
@@ -88,10 +92,10 @@ void MeshRanderer::drawFacesOnScreen() {
 	for (int i = 0; i < render_mesh->faces_array_size; i++) {
 
 		drawer->triangle(
-			project_vertices[render_mesh->faces[i].v1],
-			project_vertices[render_mesh->faces[i].v2],
-			project_vertices[render_mesh->faces[i].v3],
-			sf::Color::White
+			project_vertices[render_mesh->faces[order_of_faces[i]].v1],
+			project_vertices[render_mesh->faces[order_of_faces[i]].v2],
+			project_vertices[render_mesh->faces[order_of_faces[i]].v3],
+			render_mesh->faces[order_of_faces[i]].color
 			);
 
 	}

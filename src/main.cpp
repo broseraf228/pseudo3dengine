@@ -128,17 +128,17 @@ int main(int argc, char* argv[])
     };
 
     face faces[8]{ 
-        face(4, 0, 3, 0), 
-        face(4, 0, 1, 0), 
-        face(4, 2, 3, 0), 
-        face(4, 2, 1, 0),
+        face(4, 0, 3, sf::Color::Red), 
+        face(4, 0, 1, sf::Color::Blue),
+        face(4, 2, 3, sf::Color::Blue),
+        face(4, 2, 1, sf::Color::Red),
 
-        face(5, 0, 3, 0),
-        face(5, 0, 1, 0),
-        face(5, 2, 3, 0),
-        face(5, 2, 1, 0) };
+        face(5, 0, 3, sf::Color::Blue),
+        face(5, 0, 1, sf::Color::Red),
+        face(5, 2, 3, sf::Color::Red),
+        face(5, 2, 1, sf::Color::Blue) };
 
-    Mesh mesh(6, vertices, 8, faces);
+    Mesh mesh(6, vertices, 8, faces, new vec4[8]);
 
     Model model(mesh, vec4(0, 0, 7, 0), mtrx4::mtrx_scale(vec4(1)));
 
@@ -187,11 +187,12 @@ int main(int argc, char* argv[])
         drawer.clear();
 
         // upd model
-        model.transform = mtrx4::mtrx_rotation_x(sin((float)frame_number / 90));
-        model.position.x = sin((float)frame_number / 50) / 2 + sin((float)frame_number / 100);
+        model.transform = model.transform * mtrx4::mtrx_rotation_y((sin((float)frame_number / 90) + 1) / 90);
+        model.transform = model.transform * mtrx4::mtrx_rotation_x((sin((float)frame_number / 90 + PI / 2) + 1) / 90);
+        model.transform = model.transform * mtrx4::mtrx_rotation_z((sin((float)frame_number / 90 + PI) + 1) / 90);
 
         // wait
-        if (1000 / 120 - mimiseck_delay > 0)
+        if (1000 / 240 - mimiseck_delay > 0)
             Sleep(1000 / 120 - mimiseck_delay);
     }
     return 0;

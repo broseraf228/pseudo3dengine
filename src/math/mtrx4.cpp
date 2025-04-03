@@ -60,6 +60,16 @@ mtrx4 mtrx4::mtrx_rotation_x(float a){
 	);
 }
 
+mtrx4 mtrx4::mtrx_rotation_y(float a) {
+	return mtrx4
+	(
+		vec4(cos(a),0,	-sin(a),0),
+		vec4(0,		1,	0,		0),
+		vec4(sin(a),0,	cos(a),	0),
+		vec4(0,		0,	0,		1)
+	);
+}
+
 mtrx4 mtrx4::mtrx_rotation_z(float a) {
 	return mtrx4
 	(

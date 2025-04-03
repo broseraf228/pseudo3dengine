@@ -20,6 +20,7 @@ struct mtrx4 {
 	static mtrx4 mtrx_scale(vec4 const&);
 	// angle in radians
 	static mtrx4 mtrx_rotation_x(float);
+	static mtrx4 mtrx_rotation_y(float);
 	static mtrx4 mtrx_rotation_z(float);
 
 	void ceil();
