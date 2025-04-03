@@ -2,6 +2,8 @@
 
 #include "../math/mtrx4.hpp"
 
+#include <vector>
+
 #include "SFML/Graphics/Color.hpp"
 
 struct mtrx4;
@@ -24,19 +26,15 @@ struct Mesh {
 	// create a enpty mesh with setted size
 	Mesh(int vertices_cap = 900, int feces_cap = 1000);
 	// copy input args. caps is equal array sizes
-	Mesh(int vertices_array_size, vec4* vertices, int face_array_size, face* faces, vec4* normals = 0);
+	Mesh(const std::vector<vec4>&  vertices, const std::vector<face>& faces, const std::vector <vec4>& normals = {});
 
 	~Mesh();
 	
-	int vertices_array_cap = 0;
-	int vertices_array_size;
-	vec4* vertices;
+	std::vector<vec4> vertices;
 
-	int faces_array_cap = 0;
-	int faces_array_size;
-	face* faces;
+	std::vector<face> faces;
 
-	vec4* normals;
+	std::vector <vec4> normals;
 
 	void transform(const mtrx4&);
 	void move(const vec4&);

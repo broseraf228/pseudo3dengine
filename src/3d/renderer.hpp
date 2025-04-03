@@ -6,6 +6,7 @@
 struct PrimDrawer;
 struct Mesh;
 struct vec2;
+struct mtrx4;
 struct Model;
 
 class MeshRanderer {
@@ -46,6 +47,10 @@ public:
     // clear render mesh
     // recomended to use after ever frame
     void clear();
+
+    // transform all render vertex
+    // use this to move the camera
+    void transformAll(const mtrx4&);
 
     void render();
 };

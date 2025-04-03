@@ -23,5 +23,7 @@ struct mtrx4 {
 	static mtrx4 mtrx_rotation_y(float);
 	static mtrx4 mtrx_rotation_z(float);
 
+	static mtrx4 mtrx_shift(vec4 const&);
+
 	void ceil();
 };

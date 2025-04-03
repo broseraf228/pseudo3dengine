@@ -79,3 +79,13 @@ mtrx4 mtrx4::mtrx_rotation_z(float a) {
 		vec4(0,			0,			0,	1)
 	);
 }
+
+mtrx4 mtrx4::mtrx_shift(vec4 const& v) {
+	return mtrx4
+	(
+		vec4(1, 0, 0, v.x),
+		vec4(0, 1, 0, v.y),
+		vec4(0, 0, 1, v.z),
+		vec4(0, 0, 0, 1)
+	);
+}

@@ -5,6 +5,7 @@
 #include <time.h>
 #include <chrono>
 #include <thread>
+#include <vector>
 
 #include "console_draw_utils.hpp"
 #include "3d/renderer.hpp"
@@ -116,18 +117,19 @@ int main(int argc, char* argv[])
 
     mtrx4 r = j * g;
 
-    vec4 vertices[6]
+    std::vector<vec4> vertices
     {
-        vec4(-1, 0, 1, 0),
-        vec4(1, 0, 1, 0),
-        vec4(1, 0, -1, 0),
-        vec4(-1, 0, -1, 0),
+        vec4(-1, 0, 1, 1),
+        vec4(1, 0, 1, 1),
+        vec4(1, 0, -1, 1),
+        vec4(-1, 0, -1, 1),
 
-        vec4(0, 1.4, 0, 0),
-        vec4(0, -1.4, 0, 0),
+        vec4(0, 1.4, 0, 1),
+        vec4(0, -1.4, 0, 1),
     };
 
-    face faces[8]{ 
+    std::vector<face> faces
+    { 
         face(4, 0, 3, sf::Color::Red), 
         face(4, 0, 1, sf::Color::Blue),
         face(4, 2, 3, sf::Color::Blue),
@@ -136,11 +138,12 @@ int main(int argc, char* argv[])
         face(5, 0, 3, sf::Color::Blue),
         face(5, 0, 1, sf::Color::Red),
         face(5, 2, 3, sf::Color::Red),
-        face(5, 2, 1, sf::Color::Blue) };
+        face(5, 2, 1, sf::Color::Blue) 
+    };
 
-    Mesh mesh(6, vertices, 8, faces, new vec4[8]);
+    Mesh mesh(vertices, faces, {});
 
-    Model model(mesh, vec4(0, 0, 7, 0), mtrx4::mtrx_scale(vec4(1)));
+    Model model(mesh, vec4(0,0,7,0), mtrx4::mtrx_scale(vec4(1)));
 
     // init screen
     sf::RenderWindow window(sf::VideoMode(640, 640), "Game");
@@ -149,6 +152,10 @@ int main(int argc, char* argv[])
 
     //init camera
     MeshRanderer camera{&drawer};
+
+    // DATA
+    mtrx4 camera_rot = mtrx4::mtrx_scale(vec4(1));
+
 
     // GAME LOOP
     unsigned int frame_number = 0;
@@ -177,8 +184,32 @@ int main(int argc, char* argv[])
             }
         }
 
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::Up))
+            camera_rot = mtrx4::mtrx_rotation_x(-0.01) * camera_rot;
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::Down))
+            camera_rot = mtrx4::mtrx_rotation_x(0.01) * camera_rot;
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::Left))
+            camera_rot = mtrx4::mtrx_rotation_y(-0.01) * camera_rot;
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::Right))
+            camera_rot = mtrx4::mtrx_rotation_y(0.01) * camera_rot;
+
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::S))
+            camera_rot = mtrx4::mtrx_shift(vec4(0, 0, 0.1, 0)) * camera_rot;
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::W))
+            camera_rot = mtrx4::mtrx_shift(vec4(0, 0, -0.1, 0)) * camera_rot;
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::A))
+            camera_rot = mtrx4::mtrx_shift(vec4(0.1, 0, 0, 0)) * camera_rot;
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::D))
+            camera_rot = mtrx4::mtrx_shift(vec4(-0.1, 0, 0, 0)) * camera_rot;
+
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::LShift))
+            camera_rot = mtrx4::mtrx_shift(vec4(0, 0.1, 0, 0)) * camera_rot;
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::LControl))
+            camera_rot = mtrx4::mtrx_shift(vec4(0, -0.1, 0, 0)) * camera_rot;
+        
         // draw
         camera.addModel(model);
+        camera.transformAll(camera_rot);
         camera.render();
         camera.clear();
 
@@ -187,9 +218,9 @@ int main(int argc, char* argv[])
         drawer.clear();
 
         // upd model
-        model.transform = model.transform * mtrx4::mtrx_rotation_y((sin((float)frame_number / 90) + 1) / 90);
-        model.transform = model.transform * mtrx4::mtrx_rotation_x((sin((float)frame_number / 90 + PI / 2) + 1) / 90);
-        model.transform = model.transform * mtrx4::mtrx_rotation_z((sin((float)frame_number / 90 + PI) + 1) / 90);
+        //model.transform = model.transform * mtrx4::mtrx_rotation_y((sin((float)frame_number / 90) + 1) / 90);
+        //model.transform = model.transform * mtrx4::mtrx_rotation_x((sin((float)frame_number / 90 + PI / 2) + 1) / 90);
+        //model.transform = model.transform * mtrx4::mtrx_rotation_z((sin((float)frame_number / 90 + PI) + 1) / 90);
 
         // wait
         if (1000 / 240 - mimiseck_delay > 0)
