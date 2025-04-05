@@ -31,6 +31,12 @@ mtrx4 mtrx4::operator*(mtrx4 const& other) const {
 	return r;;
 }
 
+mtrx4 mtrx4::operator-() const{
+	return mtrx4(
+		-e1, -e2, -e3, -e4
+	);
+}
+
 void mtrx4::swap_by_diogonale(){
 	std::swap(e1.y, e2.x);
 	std::swap(e1.z, e3.x);
@@ -38,16 +44,6 @@ void mtrx4::swap_by_diogonale(){
 	std::swap(e2.z, e3.y);
 	std::swap(e2.u, e4.y);
 	std::swap(e3.u, e4.z);
-}
-
-mtrx4 mtrx4::mtrx_scale(vec4 const& v) {
-	return mtrx4
-	(
-		vec4(v.x, 0, 0, 0),
-		vec4(0, v.y, 0, 0),
-		vec4(0, 0, v.z, 0),
-		vec4(0, 0, 0, 1)
-	);
 }
 
 mtrx4 mtrx4::mtrx_rotation_x(float a){
@@ -59,7 +55,6 @@ mtrx4 mtrx4::mtrx_rotation_x(float a){
 		vec4(0,	0,		0,		1)
 	);
 }
-
 mtrx4 mtrx4::mtrx_rotation_y(float a) {
 	return mtrx4
 	(
@@ -69,7 +64,6 @@ mtrx4 mtrx4::mtrx_rotation_y(float a) {
 		vec4(0,		0,	0,		1)
 	);
 }
-
 mtrx4 mtrx4::mtrx_rotation_z(float a) {
 	return mtrx4
 	(
@@ -80,6 +74,15 @@ mtrx4 mtrx4::mtrx_rotation_z(float a) {
 	);
 }
 
+mtrx4 mtrx4::mtrx_scale(vec4 const& v) {
+	return mtrx4
+	(
+		vec4(v.x, 0, 0, 0),
+		vec4(0, v.y, 0, 0),
+		vec4(0, 0, v.z, 0),
+		vec4(0, 0, 0, 1)
+	);
+}
 mtrx4 mtrx4::mtrx_shift(vec4 const& v) {
 	return mtrx4
 	(

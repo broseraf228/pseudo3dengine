@@ -52,8 +52,9 @@ void MeshRanderer::clear(){
 	clearRenderMesh();
 }
 
-void MeshRanderer::transformAll(const mtrx4& m){
-	render_mesh->transform(m);
+void MeshRanderer::covertToCameraCord() {
+	render_mesh->move(-camera_position);
+	render_mesh->transform(camera_rotation_inv);
 }
 
 void MeshRanderer::prepare_order_of_faces(){
@@ -120,9 +121,30 @@ void MeshRanderer::drawFacesOnScreen() {
 
 void MeshRanderer::render() {
 
+	covertToCameraCord();
+
 	prepare_order_of_faces();
 	sort_faces();
 
 	projectVertices();
 	drawFacesOnScreen();
+}
+
+void MeshRanderer::setCameraPosition(const vec4& v){
+	camera_position = v;
+}
+void MeshRanderer::setCameraRotation(float camera_rotation_x, float camera_rotation_y, float camera_rotation_z){
+	camera_rotation = mtrx4::mtrx_rotation_x(camera_rotation_x) * mtrx4::mtrx_rotation_y(camera_rotation_y) * mtrx4::mtrx_rotation_y(camera_rotation_z);
+	camera_rotation_inv = mtrx4::mtrx_rotation_x(-camera_rotation_x) * mtrx4::mtrx_rotation_y(-camera_rotation_y) * mtrx4::mtrx_rotation_y(-camera_rotation_z);
+}
+
+// moves the camera relative to its rotation
+void MeshRanderer::changeCameraPosition(const vec4& v){
+	camera_position += camera_rotation * v;
+}
+// recomended for use
+// *all angles in radians
+void MeshRanderer::changeCameraRotation(float camera_rotation_x, float camera_rotation_y, float camera_rotation_z) {
+	camera_rotation = camera_rotation * mtrx4::mtrx_rotation_x(camera_rotation_x) * mtrx4::mtrx_rotation_y(camera_rotation_y) * mtrx4::mtrx_rotation_y(camera_rotation_z);;
+	camera_rotation_inv = camera_rotation_inv * mtrx4::mtrx_rotation_x(-camera_rotation_x) * mtrx4::mtrx_rotation_y(-camera_rotation_y) * mtrx4::mtrx_rotation_y(-camera_rotation_z);
 }

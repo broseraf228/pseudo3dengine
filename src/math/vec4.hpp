@@ -17,6 +17,8 @@ public:
 	vec4 const& operator*=(float);
 	vec4 const& operator/=(float);
 
+	vec4 operator-() const;
+
 	void ceil();
 	float mod() const;
 	float nosMod() const;

@@ -3,21 +3,47 @@
 #define MAX_VERTICES_COUNT 10000
 #define MAX_MODEL_COUNT 100
 
+#include "../math/mtrx4.hpp"
+
 struct PrimDrawer;
 struct Mesh;
 struct vec2;
-struct mtrx4;
 struct Model;
 
+/*
+*                   RENDERING PIPELINE
+* 
+*   1 добавление модели на отрисовываемуе сцену
+*       1 копирование меша модели во временный меш преобразований |temp_model_convert_mesh|
+*       2 применение марицы преобразования модели на временный меш преобразования  ( вращение, масштабирование, собственное перемещение )
+*       3 преобразование локальных координат модели в глобальные координаты ( сдвиг всех вертексов на вектор, сохраненный в модели )
+*       4 перенос модели из временного меша в меш рендера и очистка первого
+*   2 преобразование координат вершин из меша рендера в координаты камеры
+*       1 сдвиг камеры ( сдвиг свех вершин меша на отрицательный вектор позиции камеры )
+*       2 вращение камеры ( умножение всех вершин меша рендера на отрицательную матрицу вращения камеры)
+*   2 ...
+*/
 class MeshRanderer {
 protected:
 
     PrimDrawer* drawer;
 
-    // меш из которого берется всё для рендера
     Mesh* render_mesh;
     void clearRenderMesh();
 
+    // temp mesh needed to convert model vertexes to global coordinate system
+    Mesh* temp_model_convert_mesh;
+
+    // параметры поворота и позиции камеры
+    vec4 camera_position;
+    float camera_rotation_x, camera_rotation_y, camera_rotation_z;
+    mtrx4 camera_rotation;
+    mtrx4 camera_rotation_inv;
+
+    // converting  from world coordinates system to camera coordinates system
+    void covertToCameraCord();
+
+    // faces sotring
     unsigned short* order_of_faces;
     int rendering_faces_count;
     float* dists_faces;
@@ -33,9 +59,6 @@ protected:
     void projectVertices();
     void drawFacesOnScreen();
 
-    // temp mesh needed to convert model to mesh
-    Mesh* temp_model_convert_mesh;
-
 public:
 
     MeshRanderer(PrimDrawer* drawer);
@@ -49,9 +72,16 @@ public:
     // recomended to use after ever frame
     void clear();
 
-    // transform all render vertex
-    // use this to move the camera
-    void transformAll(const mtrx4&);
+
+    // set absolute camera position
+    void setCameraPosition(const vec4&);
+    // *all angles in radians
+    void setCameraRotation(float camera_rotation_x, float camera_rotation_y, float camera_rotation_z);
+
+    // moves the camera relative to its rotation
+    void changeCameraPosition(const vec4&);
+    // *all angles in radians
+    void changeCameraRotation(float camera_rotation_x, float camera_rotation_y, float camera_rotation_z);
 
     void render();
 };

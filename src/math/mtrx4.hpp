@@ -15,6 +15,8 @@ struct mtrx4 {
 	vec4 operator*(vec4 const&) const;
 	mtrx4 operator*(mtrx4 const&) const;
 
+	mtrx4 operator-() const;
+
 	void swap_by_diogonale();
 
 	static mtrx4 mtrx_scale(vec4 const&);

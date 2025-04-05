@@ -127,24 +127,24 @@ int main(int argc, char* argv[])
         vec4(0, 1.4, 0, 1),
         vec4(0, -1.4, 0, 1),
     };
-
+    int tyyyy = 100;
     std::vector<face> faces
     { 
-        face(4, 0, 3, sf::Color::Red), 
-        face(4, 0, 1, sf::Color::Blue),
-        face(4, 2, 3, sf::Color::Blue),
-        face(4, 2, 1, sf::Color::Red),
+        face(4, 0, 3, sf::Color(255,0,0,tyyyy)),
+        face(4, 0, 1, sf::Color(0,0,255,tyyyy)),
+        face(4, 2, 3, sf::Color(0,0,255,tyyyy)),
+        face(4, 2, 1, sf::Color(255,0,0,tyyyy)),
 
-        face(5, 0, 3, sf::Color::Blue),
-        face(5, 0, 1, sf::Color::Red),
-        face(5, 2, 3, sf::Color::Red),
-        face(5, 2, 1, sf::Color::Blue) 
+        face(5, 0, 3, sf::Color(0,0,255,tyyyy)),
+        face(5, 0, 1, sf::Color(255,0,0,tyyyy)),
+        face(5, 2, 3, sf::Color(255,0,0,tyyyy)),
+        face(5, 2, 1, sf::Color(0,0,255,tyyyy))
     };
 
     Mesh mesh(vertices, faces, {});
 
-    Model model(mesh, vec4(-2, 0, 7, 0), mtrx4::mtrx_scale(vec4(1)));
-    Model modelb(mesh, vec4(2, 0, 7, 0), mtrx4::mtrx_scale(vec4(1)));
+    Model model(mesh, vec4(0, 0, 7, 0), mtrx4::mtrx_scale(vec4(1)));
+    Model modelb(mesh, vec4(7, 0, 7, 0), mtrx4::mtrx_scale(vec4(-2)));
 
     // init screen
     sf::RenderWindow window(sf::VideoMode(720, 720), "Game");
@@ -155,7 +155,10 @@ int main(int argc, char* argv[])
     MeshRanderer camera{&drawer};
 
     // DATA
-    mtrx4 camera_rot = mtrx4::mtrx_scale(vec4(1));
+    vec4 camera_pos = 0;
+    float cam_rot_x = 0, cam_rot_y = 0;
+    mtrx4 camera_rot;
+    mtrx4 camera_rot_m;
 
 
     // GAME LOOP
@@ -186,33 +189,37 @@ int main(int argc, char* argv[])
         }
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::Up))
-            camera_rot = mtrx4::mtrx_rotation_x(-PI * 0.005) * camera_rot;
+            cam_rot_x += 0.01;
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::Down))
-            camera_rot = mtrx4::mtrx_rotation_x(PI * 0.005) * camera_rot;
+            cam_rot_x += -0.01;
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::Left))
-            camera_rot = mtrx4::mtrx_rotation_y(-PI * 0.005) * camera_rot;
+            cam_rot_y += 0.01;
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::Right))
-            camera_rot = mtrx4::mtrx_rotation_y(PI * 0.005) * camera_rot;
+            cam_rot_y += -0.01;
+
+        camera_pos = 0;
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::S))
-            camera_rot = mtrx4::mtrx_shift(vec4(0, 0, 0.1, 0)) * camera_rot;
+            camera_pos -= vec4(0, 0, 0.1, 0);
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::W))
-            camera_rot = mtrx4::mtrx_shift(vec4(0, 0, -0.1, 0)) * camera_rot;
+            camera_pos += vec4(0, 0, 0.1, 0);
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::A))
-            camera_rot = mtrx4::mtrx_shift(vec4(0.1, 0, 0, 0)) * camera_rot;
+            camera_pos -= vec4(0.1, 0, 0, 0);
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::D))
-            camera_rot = mtrx4::mtrx_shift(vec4(-0.1, 0, 0, 0)) * camera_rot;
+            camera_pos += vec4(0.1, 0, 0, 0);
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::LShift))
-            camera_rot = mtrx4::mtrx_shift(vec4(0, 0.1, 0, 0)) * camera_rot;
+            camera_pos += vec4(0, 0.1, 0, 0);
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::LControl))
-            camera_rot = mtrx4::mtrx_shift(vec4(0, -0.1, 0, 0)) * camera_rot;
+            camera_pos -= vec4(0, 0.1, 0, 0);
+
+        camera.changeCameraPosition(camera_pos);
+        camera.setCameraRotation(cam_rot_x, cam_rot_y, 0);
         
         // draw
         camera.addModel(model);
         camera.addModel(modelb);
 
-        camera.transformAll(camera_rot);
         camera.render();
         camera.clear();
 
@@ -225,9 +232,9 @@ int main(int argc, char* argv[])
         model.transform = model.transform * mtrx4::mtrx_rotation_x((sin((float)frame_number / 90 + PI / 2) + 1) / 90);
         model.transform = model.transform * mtrx4::mtrx_rotation_z((sin((float)frame_number / 90 + PI   ) + 1) / 90);
 
-        modelb.transform = model.transform * mtrx4::mtrx_rotation_y((cos((float)frame_number / 90) + 1) / 90);
-        modelb.transform = model.transform * mtrx4::mtrx_rotation_x((cos((float)frame_number / 90 + PI / 2) + 1) / 90);
-        modelb.transform = model.transform * mtrx4::mtrx_rotation_z((cos((float)frame_number / 90 + PI) + 1) / 90);
+        modelb.transform = modelb.transform * mtrx4::mtrx_rotation_y((sin((float)frame_number / 90) + 1) / 90);
+        modelb.transform = modelb.transform * mtrx4::mtrx_rotation_x((sin((float)frame_number / 90 + PI / 2) + 1) / 90);
+        modelb.transform = modelb.transform * mtrx4::mtrx_rotation_z((sin((float)frame_number / 90 + PI) + 1) / 90);
 
         // wait
         if (1000 / 240 - mimiseck_delay > 0)
