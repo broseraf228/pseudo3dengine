@@ -144,10 +144,11 @@ int main(int argc, char* argv[])
     Mesh mesh(vertices, faces, {});
 
     Model model(mesh, vec4(0, 0, 7, 0), mtrx4::mtrx_scale(vec4(1)));
-    Model modelb(mesh, vec4(7, 0, 7, 0), mtrx4::mtrx_scale(vec4(-2)));
+    Model modelb(mesh, vec4(0, 0, 7, 0), mtrx4::mtrx_scale(vec4(-2)));
 
     // init screen
-    sf::RenderWindow window(sf::VideoMode(720, 720), "Game");
+    int window_size_x = 720, window_size_y = 720;
+    sf::RenderWindow window(sf::VideoMode(window_size_x, window_size_y), "Game");
 
     PrimDrawer drawer(&window);
 
@@ -188,30 +189,26 @@ int main(int argc, char* argv[])
             }
         }
 
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::Up))
-            cam_rot_x += 0.01;
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::Down))
-            cam_rot_x += -0.01;
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::Left))
-            cam_rot_y += 0.01;
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::Right))
-            cam_rot_y += -0.01;
+        // управление камерой
+        sf::Vector2i mouse_pos = sf::Mouse::getPosition(window);
+        cam_rot_y -= (mouse_pos.x - (window_size_x * 0.5)) * delta * 0.1;
+        cam_rot_x -= (mouse_pos.y - (window_size_y * 0.5)) * delta * 0.1;
+        sf::Mouse::setPosition(sf::Vector2i(window_size_x * 0.5, window_size_y * 0.5), window);
 
         camera_pos = 0;
-
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::S))
-            camera_pos -= vec4(0, 0, 0.1, 0);
+            camera_pos -= vec4(0, 0, 10, 0) * delta;
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::W))
-            camera_pos += vec4(0, 0, 0.1, 0);
+            camera_pos += vec4(0, 0, 10, 0) * delta;
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::A))
-            camera_pos -= vec4(0.1, 0, 0, 0);
+            camera_pos -= vec4(10, 0, 0, 0) * delta;
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::D))
-            camera_pos += vec4(0.1, 0, 0, 0);
+            camera_pos += vec4(10, 0, 0, 0) * delta;
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::LShift))
-            camera_pos += vec4(0, 0.1, 0, 0);
+            camera_pos += vec4(0, 10, 0, 0) * delta;
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::LControl))
-            camera_pos -= vec4(0, 0.1, 0, 0);
+            camera_pos -= vec4(0, 10, 0, 0) * delta;
 
         camera.changeCameraPosition(camera_pos);
         camera.setCameraRotation(cam_rot_x, cam_rot_y, 0);
@@ -228,17 +225,18 @@ int main(int argc, char* argv[])
         drawer.clear();
 
         // upd model
-        model.transform = model.transform * mtrx4::mtrx_rotation_y((sin((float)frame_number / 90        ) + 1) / 90);
-        model.transform = model.transform * mtrx4::mtrx_rotation_x((sin((float)frame_number / 90 + PI / 2) + 1) / 90);
-        model.transform = model.transform * mtrx4::mtrx_rotation_z((sin((float)frame_number / 90 + PI   ) + 1) / 90);
+        model.transform = model.transform * mtrx4::mtrx_rotation_y((cos((float)frame_number / 90        ) + 1) * delta);
+        model.transform = model.transform * mtrx4::mtrx_rotation_x((cos((float)frame_number / 90 + PI / 2) + 1) * delta);
+        model.transform = model.transform * mtrx4::mtrx_rotation_z((cos((float)frame_number / 90 + PI   ) + 1) * delta);
 
-        modelb.transform = modelb.transform * mtrx4::mtrx_rotation_y((sin((float)frame_number / 90) + 1) / 90);
-        modelb.transform = modelb.transform * mtrx4::mtrx_rotation_x((sin((float)frame_number / 90 + PI / 2) + 1) / 90);
-        modelb.transform = modelb.transform * mtrx4::mtrx_rotation_z((sin((float)frame_number / 90 + PI) + 1) / 90);
+        modelb.transform = modelb.transform * mtrx4::mtrx_rotation_y((sin((float)frame_number / 90) + 1) * delta);
+        modelb.transform = modelb.transform * mtrx4::mtrx_rotation_x((sin((float)frame_number / 90 + PI / 2) + 1) * delta);
+        modelb.transform = modelb.transform * mtrx4::mtrx_rotation_z((sin((float)frame_number / 90 + PI) + 1) * delta);
 
         // wait
+
         if (1000 / 240 - mimiseck_delay > 0)
-            Sleep(1000 / 120 - mimiseck_delay);
+            Sleep(1000 / 240 - mimiseck_delay);
     }
     return 0;
 }
